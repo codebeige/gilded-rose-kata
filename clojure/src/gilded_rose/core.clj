@@ -1,9 +1,10 @@
 (ns gilded-rose.core)
 
-(defn update-quality [items]
-  (map
-   (fn [item]
-     (cond
+(defn ensure-item-boundaries [item]
+  (update item :quality max 0))
+
+(defn update-item-quality [item]
+  (cond
       (and (< (:sell-in item) 0) (= "Backstage passes to a TAFKAL80ETC concert" (:name item)))
       (merge item {:quality 0})
 
@@ -27,11 +28,18 @@
       (merge item {:quality (dec (:quality item))})
 
       :else item))
-   (map (fn [item]
-          (if (not= "Sulfuras, Hand of Ragnaros" (:name item))
-            (merge item {:sell-in (dec (:sell-in item))})
-            item))
-        items)))
+
+(defn update-item-sell-in [item]
+  (if (not= "Sulfuras, Hand of Ragnaros" (:name item))
+           (merge item {:sell-in (dec (:sell-in item))})
+           item))
+
+(defn update-quality [items]
+  (map
+   (comp ensure-item-boundaries
+         update-item-quality
+         update-item-sell-in)
+   items))
 
 (defn item [item-name, sell-in, quality]
   {:name item-name, :sell-in sell-in, :quality quality})

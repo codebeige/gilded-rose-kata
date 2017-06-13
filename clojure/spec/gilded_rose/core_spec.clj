@@ -27,7 +27,7 @@
       (should= {:sell-in -1 :quality 28}
                (update-item {:sell-in 0 :quality 30})))
 
-    (xit "does not lower quality beyond 0"
+    (it "does not lower quality beyond 0"
       (should= {:quality 0}
                (update-item {:quality 0})))
 
